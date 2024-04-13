@@ -30,6 +30,22 @@ const lightbox = new SimpleLightbox('.images a', {
     captionDelay: 250,
 });
 
+// const options = {
+//     threshold: 0.5,
+// };
+// const callback = function (entries, observer) {
+
+//     entries.forEach((entry) => {
+//         if (entry.isIntersecting) {
+//             observer.unobserve(entry.target)
+//             imagesMore();
+//         }
+//     });
+// };
+
+// const observer = new IntersectionObserver(callback, options);// реалізація скролу
+
+
 let page = 1;
 let totalPages = 0;
 let searchInput = "";
@@ -56,18 +72,19 @@ async function searchImages(evt) {
     try {
         const data = await getInform(searchInput, page);
         if (data.hits.length === 0) {
-            return iziToast.warning({
+            iziToast.warning({
                 title: '',
                 message: 'Sorry, there are no images matching your search query. Please try again!',
                 position: 'topRight',
             });
+            return;
         }
         list.insertAdjacentHTML("beforeend", createMarkup(data.hits));
         lightbox.refresh();
         totalPages = Math.ceil(data.totalHits / 15);
-
         if (page < totalPages) {
             btnShow();
+            // observer.observe(list.lastElementChild) // реалізація скролу
         }
         form.reset();
     } catch (error) {
@@ -89,15 +106,17 @@ async function imagesMore() {
     try {
         const data = await getInform(searchInput, page);
         list.insertAdjacentHTML("beforeend", createMarkup(data.hits));
-        const { height } = list.firstElementChild.getBoundingClientRect();
-        window.scrollBy({
-            top: height * 2,
-            behavior: "smooth",
-        });
+        // const { height } = list.firstElementChild.getBoundingClientRect();// реалізація скролу
+        // window.scrollBy({
+        //     top: height * 2,
+        //     behavior: "smooth",
+        // });
         lightbox.refresh();
+        // observer.observe(list.lastElementChild);.// реалізація скролу
 
         if (page === totalPages) {
             btnShow();
+            // observer.unobserve(list.lastElementChild);// реалізація скролу
             return iziToast.info({
                 position: "topRight",
                 message: "We're sorry, but you've reached the end of search results."
